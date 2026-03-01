@@ -1,74 +1,28 @@
-// import { Moon, Sun } from "lucide-react";
-// import { useEffect, useState } from "react";
-// import { cn } from "@/lib/util";
-
-// export const ThemeToggle = () => {
-//   const [isDarkMode, setIsDarkMode] = useState(true);
-
-//   useEffect(() => {
-//     const storedTheme = localStorage.getItem("theme");
-//     if (storedTheme === "dark") {
-//       setIsDarkMode(true);
-//       document.documentElement.classList.add("dark");
-//     } else {
-//       localStorage.setItem("theme", "light");
-//       setIsDarkMode(false);
-//     }
-//   }, []);
-
-//   const toggleTheme = () => {
-//     if (isDarkMode) {
-//       document.documentElement.classList.remove("dark");
-//       localStorage.setItem("theme", "light");
-//       setIsDarkMode(false);
-//     } else {
-//       document.documentElement.classList.add("dark");
-//       localStorage.setItem("theme", "dark");
-//       setIsDarkMode(true);
-//     }
-//   };
-
-//   return (
-//     <button
-//       onClick={toggleTheme}
-//       className={cn(
-//         "fixed max-sm:hidden top-5 right-5 z-50 p-2 rounded-full transition-colors duration-300",
-//         "focus:outlin-hidden"
-//       )}
-//     >
-//       {isDarkMode ? (
-//         <Sun className="h-6 w-6 text-yellow-300" />
-//       ) : (
-//         <Moon className="h-6 w-6 text-blue-900" />
-//       )}
-//     </button>
-//   );
-// };
-
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/util";
 
 export const ThemeToggle = () => {
-  // ✅ Initialize state directly (no cascade)
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const storedTheme = localStorage.getItem("theme");
-    return storedTheme === "dark";
-  });
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // ✅ Only sync DOM, no state update here
+  // ✅ Sync state with actual DOM (set by your script)
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [isDarkMode]);
+    const isDark = document.documentElement.classList.contains("dark");
+    setIsDarkMode(isDark);
+  }, []);
 
   const toggleTheme = () => {
-    setIsDarkMode(prev => !prev);
+    const root = document.documentElement;
+
+    if (root.classList.contains("dark")) {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setIsDarkMode(false);
+    } else {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setIsDarkMode(true);
+    }
   };
 
   return (
@@ -76,7 +30,7 @@ export const ThemeToggle = () => {
       onClick={toggleTheme}
       className={cn(
         "fixed max-sm:hidden top-5 right-5 z-50 p-2 rounded-full transition-colors duration-300",
-        "focus:outline-none" // ✅ also fixed typo here
+        "focus:outline-none"
       )}
     >
       {isDarkMode ? (
